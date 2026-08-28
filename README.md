@@ -129,19 +129,7 @@ dias`). Vale tanto pra `/planejar` quanto pra `/compromisso`. A recorrência men
 do mês corretamente (ex: dia 31 recorrendo em fevereiro cai no dia 28, e volta pro dia 31 em
 meses que têm esse dia).
 
-## 5. Implantar no VPS
-
-O `compose.yml` público é portátil e adequado para desenvolvimento ou um deploy simples. A
-configuração operacional específica — rede do proxy, domínio, endereços, caminhos persistentes e
-credenciais — deve ficar fora deste repositório. Nesta instalação ela vive no diretório privado
-irmão `../tvdash-vps` e é transferida separadamente para o servidor.
-
-No VPS, o código continua vindo deste repositório público, mas o Compose privado fornece os
-arquivos de ambiente, conecta o container à rede externa do proxy e força `AUTH_ENABLED=true`.
-Nunca execute simultaneamente duas instâncias com o mesmo `TELEGRAM_BOT_TOKEN`: ambas tentariam
-consumir o long polling do mesmo bot.
-
-## 6. Sideload do canal na Roku (Philco / Roku OS)
+## 5. Sideload do canal na Roku (Philco / Roku OS)
 
 1. No controle da Roku, com a tela de Home aberta: **Home ×3, Cima ×2, Direita, Esquerda, Direita, Esquerda, Direita**.
 2. Aceite o termo de licença de desenvolvedor.
@@ -155,7 +143,7 @@ consumir o long polling do mesmo bot.
    ```
 7. No instalador web, use "Upload" para enviar `tvdash-roku.zip` e clique em **Install**.
 
-## 7. Ativar como screensaver
+## 6. Ativar como screensaver
 
 Na Roku: **Configurações → Tela → Protetor de tela → Tipo de protetor de tela** → selecione
 **"TV Dash - Painel de Tarefas"**. Ajuste o tempo de inatividade em "Iniciar após" como preferir.

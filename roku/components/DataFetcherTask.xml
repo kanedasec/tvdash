@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="DataFetcherTask" extends="Task">
+    <interface>
+        <field id="ranking" type="array" />
+        <field id="tempo" type="array" />
+        <field id="tempoPessoa" type="array" />
+        <field id="semana" type="array" />
+        <field id="exercicioRanking" type="array" />
+        <field id="exercicioTipo" type="array" />
+        <field id="semanaExercicio" type="array" />
+        <field id="ok" type="boolean" value="false" />
+    </interface>
+    <script type="text/brightscript" uri="pkg:/components/DataFetcherTask.brs" />
+</component>

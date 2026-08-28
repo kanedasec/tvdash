@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="TvDashScreensaver" extends="Scene">
+    <script type="text/brightscript" uri="pkg:/components/TvDashScreensaver.brs" />
+
+    <children>
+        <Label id="lblTitulo" text="TV Dash" translation="[60,40]" color="0xEDEAE4FF" />
+        <Label id="lblRelogio" text="" translation="[1700,40]" color="0x8B8F9BFF" />
+        <Rectangle id="linhaHeader" translation="[60,110]" width="1800" height="2" color="0x2A2E37FF" />
+
+        <Group id="menuCasa" visible="true">
+            <Rectangle id="tabSemana" translation="[60,126]" width="6" height="30" color="0xC9A66BFF" />
+            <Label id="tituloSemana" text="Semana atual" translation="[80,128]" color="0xEDEAE4FF" />
+            <Group id="grpSemana" translation="[60,172]" />
+
+            <Rectangle id="linhaMeio" translation="[60,522]" width="1800" height="2" color="0x2A2E37FF" />
+
+            <Rectangle id="tabPontos" translation="[60,538]" width="6" height="28" color="0xB97A87FF" />
+            <Label id="tituloPontos" text="Pontos por pessoa" translation="[80,540]" color="0xEDEAE4FF" />
+            <Group id="grpPontos" translation="[60,585]" />
+
+            <Rectangle id="tabTempoPessoa" translation="[680,538]" width="6" height="28" color="0x9B8EC4FF" />
+            <Label id="tituloTempoPessoa" text="Tempo por pessoa" translation="[700,540]" color="0xEDEAE4FF" />
+            <Group id="grpTempoPessoa" translation="[680,585]" />
+
+            <Rectangle id="tabTempoAtividade" translation="[1300,538]" width="6" height="28" color="0x6C8EBFFF" />
+            <Label id="tituloTempoAtividade" text="Tempo por atividade" translation="[1320,540]" color="0xEDEAE4FF" />
+            <Group id="grpTempoAtividade" translation="[1300,585]" />
+        </Group>
+
+        <Group id="menuExercicio" visible="false">
+            <Rectangle id="tabSemanaEx" translation="[60,126]" width="6" height="30" color="0xC9A66BFF" />
+            <Label id="tituloSemanaEx" text="Semana atual" translation="[80,128]" color="0xEDEAE4FF" />
+            <Group id="grpSemanaEx" translation="[60,172]" />
+
+            <Rectangle id="linhaMeioEx" translation="[60,522]" width="1800" height="2" color="0x2A2E37FF" />
+
+            <Rectangle id="tabTempoPessoaEx" translation="[60,538]" width="6" height="28" color="0xB97A87FF" />
+            <Label id="tituloTempoPessoaEx" text="Tempo por pessoa" translation="[80,540]" color="0xEDEAE4FF" />
+            <Group id="grpExercicioTempo" translation="[60,585]" />
+
+            <Rectangle id="tabCheckinsEx" translation="[680,538]" width="6" height="28" color="0x9B8EC4FF" />
+            <Label id="tituloCheckinsEx" text="Checkins por pessoa" translation="[700,540]" color="0xEDEAE4FF" />
+            <Group id="grpExercicioCheckins" translation="[680,585]" />
+
+            <Rectangle id="tabTipoEx" translation="[1300,538]" width="6" height="28" color="0x6C8EBFFF" />
+            <Label id="tituloTipoEx" text="Tempo por tipo" translation="[1320,540]" color="0xEDEAE4FF" />
+            <Group id="grpExercicioTipo" translation="[1300,585]" />
+        </Group>
+
+        <Label id="lblStatus" text="" translation="[60,1030]" color="0x8B8F9BFF" />
+
+        <Timer id="refreshTimer" repeat="true" duration="30" />
+        <Timer id="rotateTimer" repeat="true" duration="20" />
+    </children>
+</component>

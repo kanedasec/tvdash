@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TV Dash</title>
+  <link rel="stylesheet" href="/static/css/dashboard.css" />
+</head>
+<body>
+  <header>
+    <h1 id="titulo-painel">🏠 Tarefas de Casa</h1>
+    <div class="abas" id="abas">
+      <button class="aba-btn ativo" data-aba="casa">🏠 Tarefas de Casa</button>
+      <button class="aba-btn" data-aba="exercicio">🏃 Atividade Física</button>
+    </div>
+    <div class="periodo-toggle" id="periodo-toggle">
+      <button data-periodo="semana" class="ativo">Semana</button>
+      <button data-periodo="mes">Mês</button>
+      <button data-periodo="ano">Ano</button>
+    </div>
+  </header>
+
+  <main id="painel-casa" class="painel">
+    <section class="card card-calendario">
+      <h2>Calendário</h2>
+      <div id="calendario-casa"></div>
+    </section>
+
+    <section class="card">
+      <h2>Ranking geral</h2>
+      <canvas id="grafico-ranking"></canvas>
+    </section>
+
+    <section class="card">
+      <h2>Tempo por pessoa</h2>
+      <canvas id="grafico-tempo-pessoa"></canvas>
+    </section>
+
+    <section class="card">
+      <h2>Tempo por atividade</h2>
+      <canvas id="grafico-tempo"></canvas>
+    </section>
+
+    <section class="card">
+      <h2>Peso por atividade</h2>
+      <canvas id="grafico-peso"></canvas>
+    </section>
+
+    <section class="card">
+      <h2>Próximos compromissos</h2>
+      <ul id="lista-agenda"></ul>
+    </section>
+
+    <section class="card">
+      <h2>Tarefas cadastradas</h2>
+      <ul id="lista-tarefas"></ul>
+    </section>
+  </main>
+
+  <main id="painel-exercicio" class="painel" hidden>
+    <section class="card card-calendario">
+      <h2>Calendário</h2>
+      <div id="calendario-exercicio"></div>
+    </section>
+
+    <section class="card">
+      <h2>Ranking por tempo</h2>
+      <canvas id="grafico-exercicio-tempo"></canvas>
+    </section>
+
+    <section class="card">
+      <h2>Ranking por checkins</h2>
+      <canvas id="grafico-exercicio-checkins"></canvas>
+    </section>
+
+    <section class="card">
+      <h2>Tempo por tipo de exercício</h2>
+      <canvas id="grafico-exercicio-tipo"></canvas>
+    </section>
+
+    <section class="card">
+      <h2>Exercícios cadastrados</h2>
+      <ul id="lista-exercicios"></ul>
+    </section>
+  </main>
+
+  <script src="/static/vendor/chart.min.js"></script>
+  <script src="/static/js/dashboard.js"></script>
+</body>
+</html>

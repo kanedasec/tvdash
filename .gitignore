@@ -1,0 +1,46 @@
+# Secrets and machine-local configuration
+.env
+.env.*
+!.env.example
+!**/.env.example
+
+# Local databases (contain household and Telegram user data)
+*.db
+*.db-*
+*.sqlite
+*.sqlite3
+*.sqlite3-*
+
+# Python environments, bytecode, caches, tests, and coverage
+.venv/
+venv/
+env/
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
+
+# Python build and packaging output
+build/
+dist/
+*.egg-info/
+
+# Runtime output
+*.log
+*.pid
+
+# Generated Roku sideload package (rebuild from roku/)
+tvdash-roku.zip
+
+# Editors and operating systems
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo

@@ -1,0 +1,14 @@
+[Unit]
+Description=TV Dash - backend + bot Telegram (tarefas e agenda de casa)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=/home/kanedasec/Projects/tvdash/backend
+ExecStart=/home/kanedasec/Projects/tvdash/backend/.venv/bin/uvicorn app.main:app --host 0.0.0.0 --port 8000
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=default.target

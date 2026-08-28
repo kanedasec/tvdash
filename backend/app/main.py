@@ -7,6 +7,7 @@ from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 
 from . import crud
+from .auth import authentication_middleware, validate_auth_config
 from .bot import build_application
 from .config import TELEGRAM_BOT_TOKEN
 from .db import get_session, init_db
@@ -19,6 +20,7 @@ logger = logging.getLogger("tvdash")
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    validate_auth_config()
     init_db()
     with get_session() as session:
         crud.seed_users(session)
@@ -46,6 +48,14 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(title="TV Dash", lifespan=lifespan)
+app.middleware("http")(authentication_middleware)
+
+
+@app.get("/healthz", include_in_schema=False)
+def healthz():
+    return {"status": "ok"}
+
+
 app.mount(
     "/static", StaticFiles(directory=str(Path(__file__).resolve().parent / "static")), name="static"
 )

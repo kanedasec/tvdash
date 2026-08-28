@@ -10,5 +10,6 @@
         <field id="semanaExercicio" type="array" />
         <field id="ok" type="boolean" value="false" />
     </interface>
+    <script type="text/brightscript" uri="pkg:/source/config.brs" />
     <script type="text/brightscript" uri="pkg:/components/DataFetcherTask.brs" />
 </component>

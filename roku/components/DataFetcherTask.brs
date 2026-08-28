@@ -1,10 +1,6 @@
 ' Roda numa thread separada da UI (Task) — bloquear aqui é seguro,
 ' não trava a tela nem o controle remoto, mesmo se o backend não responder.
 
-Function BaseUrl() as String
-    return "http://192.168.18.4:8000"
-End Function
-
 Sub Init()
     m.top.functionName = "DoFetch"
 End Sub
@@ -13,7 +9,13 @@ Function HttpGetJson(caminho as String) as Dynamic
     http = CreateObject("roUrlTransfer")
     port = CreateObject("roMessagePort")
     http.SetMessagePort(port)
-    http.SetUrl(BaseUrl() + caminho)
+    http.SetCertificatesFile("common:/certs/ca-bundle.crt")
+    http.SetUrl(TvdashBaseUrl() + caminho)
+
+    apiKey = TvdashApiKey()
+    if apiKey <> ""
+        http.AddHeader("X-TVdash-Key", apiKey)
+    end if
 
     if not http.AsyncGetToString()
         return invalid

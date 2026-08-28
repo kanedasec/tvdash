@@ -36,6 +36,10 @@ dist/
 
 # Generated Roku sideload package (rebuild from roku/)
 tvdash-roku.zip
+roku/source/config.brs
+
+# Private deployment bundles must live outside this public repository
+/tvdash-vps/
 
 # Editors and operating systems
 .DS_Store

@@ -1,29 +1,47 @@
 # TV Dash
 
 Organização de tarefas de casa e agenda, cadastradas por um bot do Telegram (grupo privado),
-com dashboard web na rede local e um screensaver nativo na Roku TV.
+com dashboard web hospedado em VPS e um screensaver nativo na Roku TV.
 
 ## Estrutura
 
 ```
-backend/   FastAPI + bot do Telegram + SQLite (roda no notebook)
+backend/   FastAPI + bot do Telegram + SQLite
 roku/      Canal Roku (BrightScript/SceneGraph) sideloaded como screensaver
-deploy/    Unit systemd para o backend rodar no boot
 ```
 
-## 1. Configurar o backend
+## 1. Configurar o ambiente
+
+O backend nativo e o `compose.yml` público usam o mesmo arquivo privado `backend/.env`. Ele é
+ignorado pelo Git e nunca deve ser commitado.
 
 ```bash
-cd backend
-python3 -m venv .venv
-./.venv/bin/pip install -r requirements.txt
-cp .env.example .env
+[ -e backend/.env ] || cp backend/.env.example backend/.env
 ```
 
 Edite `backend/.env`:
-- `USER_NAMES` — nomes fixos dos dois usuários (ex: `Vernon,Luana`).
+- `USER_NAMES` — nomes fixos dos dois usuários (ex: `Pessoa1,Pessoa2`).
 - `TIMEZONE`, `DB_PATH`, `PORT` — os padrões já funcionam.
 - `TELEGRAM_BOT_TOKEN` e `ALLOWED_CHAT_ID` — preencha nos passos 2 e 3 abaixo.
+- `AUTH_ENABLED`, `WEB_USERNAME`, `WEB_PASSWORD` e `ROKU_API_KEY` — protegem o deploy no VPS.
+
+Por padrão, o Compose carrega esse arquivo com:
+
+```yaml
+env_file:
+  - ./backend/.env
+```
+
+Para manter as credenciais em outro diretório, informe um caminho absoluto ou relativo sem editar
+o Compose:
+
+```bash
+TVDASH_ENV_FILE=/caminho/privado/tvdash.env docker compose up -d --build
+```
+
+O arquivo escolhido precisa conter, no mínimo, `TELEGRAM_BOT_TOKEN`, `ALLOWED_CHAT_ID` e
+`USER_NAMES` para o bot funcionar. `TIMEZONE` e `REMINDER_HOUR` são opcionais e possuem valores
+padrão.
 
 ## 2. Criar o bot no Telegram
 
@@ -45,14 +63,41 @@ Edite `backend/.env`:
 
 O bot só responde a mensagens desse `chat_id` — em qualquer outro chat, ele ignora silenciosamente.
 
-## 4. Rodar o backend
+## 4. Rodar localmente (opcional)
+
+Com Docker Compose:
+
+```bash
+docker compose up -d --build
+docker compose ps
+docker compose logs -f tvdash
+```
+
+Por padrão, o serviço fica disponível somente em `127.0.0.1:8000` e o SQLite é persistido no
+volume nomeado `tvdash-data`. Configure autenticação em `backend/.env` se outras pessoas ou
+dispositivos puderem acessar essa porta.
+
+- `AUTH_ENABLED=false`: não solicita login; indicado apenas para desenvolvimento local restrito a
+  `127.0.0.1`.
+- `AUTH_ENABLED=true`: o dashboard solicita `WEB_USERNAME` e `WEB_PASSWORD`; a API também aceita a
+  `ROKU_API_KEY` nas rotas `/api/*`.
+
+Para parar sem apagar o banco persistido:
+
+```bash
+docker compose down
+```
+
+Sem Docker:
 
 ```bash
 cd backend
-./.venv/bin/uvicorn app.main:app --host 0.0.0.0 --port 8000
+python3 -m venv .venv
+./.venv/bin/pip install -r requirements.txt
+./.venv/bin/uvicorn app.main:app --host 127.0.0.1 --port 8000
 ```
 
-Acesse `http://<ip-do-notebook>:8000` no navegador (celular ou notebook, mesma rede) para ver o dashboard.
+Acesse `http://127.0.0.1:8000` no navegador para desenvolvimento local.
 Tem duas abas — **Tarefas de Casa** e **Atividade Física** — e um seletor de período (semana/mês/ano)
 que controla o calendário e os gráficos de ranking de ambas. No calendário, a visão de mês é uma
 grade (com contagem de atividades por dia) e a de ano é um heatmap estilo GitHub (mais escuro =
@@ -84,36 +129,17 @@ dias`). Vale tanto pra `/planejar` quanto pra `/compromisso`. A recorrência men
 do mês corretamente (ex: dia 31 recorrendo em fevereiro cai no dia 28, e volta pro dia 31 em
 meses que têm esse dia).
 
-## 5. Deixar o backend rodando sempre (systemd --user, sem sudo)
+## 5. Implantar no VPS
 
-Usa um serviço `systemd --user` (não precisa de root) + `loginctl enable-linger` (permite o serviço
-rodar mesmo sem estar logado, já a partir do boot):
+O `compose.yml` público é portátil e adequado para desenvolvimento ou um deploy simples. A
+configuração operacional específica — rede do proxy, domínio, endereços, caminhos persistentes e
+credenciais — deve ficar fora deste repositório. Nesta instalação ela vive no diretório privado
+irmão `../tvdash-vps` e é transferida separadamente para o servidor.
 
-```bash
-mkdir -p ~/.config/systemd/user
-cp deploy/tvdash.service ~/.config/systemd/user/
-systemctl --user daemon-reload
-systemctl --user enable --now tvdash
-loginctl enable-linger $USER
-systemctl --user status tvdash
-```
-
-Reinício automático todo dia à 1h (não afeta o banco de dados — só reinicia o processo), via
-crontab do próprio usuário (`crontab -e`, sem sudo):
-```
-0 1 * * * XDG_RUNTIME_DIR=/run/user/1000 systemctl --user restart tvdash
-```
-(`/run/user/1000` é o `XDG_RUNTIME_DIR` do usuário — confira o seu com `id -u`; sem essa variável o
-`systemctl --user` chamado pelo cron não encontra a sessão e falha com "Failed to connect to bus".)
-
-Se o notebook usa `ufw`, libere a porta na rede local:
-```bash
-sudo ufw allow from 192.168.18.0/24 to any port 8000
-```
-
-**Recomendado:** reserve um IP fixo para o notebook no seu roteador (DHCP reservation) — o canal
-Roku aponta para um IP fixo (`192.168.18.4:8000` por padrão, ajustável em
-`roku/components/TvDashScreensaver.brs`, função `BaseUrl()`).
+No VPS, o código continua vindo deste repositório público, mas o Compose privado fornece os
+arquivos de ambiente, conecta o container à rede externa do proxy e força `AUTH_ENABLED=true`.
+Nunca execute simultaneamente duas instâncias com o mesmo `TELEGRAM_BOT_TOKEN`: ambas tentariam
+consumir o long polling do mesmo bot.
 
 ## 6. Sideload do canal na Roku (Philco / Roku OS)
 
@@ -121,11 +147,11 @@ Roku aponta para um IP fixo (`192.168.18.4:8000` por padrão, ajustável em
 2. Aceite o termo de licença de desenvolvedor.
 3. Defina uma senha para o instalador web e anote o **IP da Roku** mostrado na tela.
 4. No navegador (mesma rede), acesse `http://<ip-da-roku>`, faça login com usuário `rokudev` e a senha definida.
-5. Se mudou o IP do notebook, edite `BaseUrl()` em `roku/components/TvDashScreensaver.brs` antes de gerar o zip.
-6. Gere o pacote (já incluso neste repo como `tvdash-roku.zip`, ou regenere):
+5. Defina `TVDASH_BASE_URL` e `TVDASH_ROKU_API_KEY` ao gerar o pacote, ou copie
+   `roku/source/config.example.brs` para o arquivo ignorado `roku/source/config.brs`.
+6. Gere o pacote:
    ```bash
-   cd roku
-   zip -r ../tvdash-roku.zip manifest source components images
+   ./roku/build.sh
    ```
 7. No instalador web, use "Upload" para enviar `tvdash-roku.zip` e clique em **Install**.
 
@@ -146,16 +172,14 @@ conexão voltar.
 
 - O bot só processa mensagens do `chat_id` configurado em `ALLOWED_CHAT_ID` — qualquer outro chat
   é ignorado.
-- O bot usa *long polling* (conexões de saída para a API do Telegram) — o notebook não precisa
-  estar acessível pela internet para o bot funcionar.
-- O dashboard web (porta 8000) **não tem autenticação** e é liberado só pra rede local
-  (`192.168.18.0/24` via `ufw`) — qualquer dispositivo no Wi-Fi de casa consegue ver o painel.
-  Aceitável pra um app doméstico, mas não exponha essa porta pra internet (sem port-forward no
-  roteador).
-- `backend/.env` guarda o token do bot em texto puro — trate como senha (não commite no git, não
-  compartilhe o arquivo).
-- Ponto único de falha: se o notebook ficar desligado/sem rede, bot e dashboard ficam fora do ar
-  (sem redundância).
+- O bot usa *long polling* (conexões de saída para a API do Telegram) — não precisa receber webhook
+  nem ter uma porta pública exclusiva.
+- No VPS, o dashboard usa HTTP Basic Auth e a API aceita uma chave separada para a Roku. As duas
+  credenciais trafegam apenas por HTTPS.
+- O container de produção não deve publicar a porta 8000 diretamente; use um proxy HTTPS.
+- Os arquivos de ambiente guardam o token do bot em texto puro — trate-os como senha (não commite
+  nem compartilhe esses arquivos).
+- `roku/source/config.brs` e o ZIP gerado contêm a chave da Roku e também não devem ser publicados.
 
 ## Limitações conhecidas / avisos
 

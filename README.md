@@ -3,6 +3,17 @@
 Organização de tarefas de casa e agenda, cadastradas por um bot do Telegram (grupo privado),
 com dashboard web hospedado em VPS e um screensaver nativo na Roku TV.
 
+## Fluxo de contribuição e entrega
+
+O código segue `feature/* -> Pull Request -> main`. Pull requests executam os
+testes do backend e as verificações diferenciais de SAST, segredos e SCA. Após
+um merge protegido, a pipeline publica uma imagem imutável no GHCR com a tag
+`sha-<commit>` e a entrega ao VPS por Tailscale e SSH restrito. O VPS apenas
+executa a imagem; ele não compila o código-fonte.
+
+As instruções e os limites de confiança da automação estão em
+[`AGENT.md`](AGENT.md).
+
 ## Estrutura
 
 ```

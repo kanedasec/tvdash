@@ -102,6 +102,10 @@ DEPLOY_URL               variable: https://tvdash.kanedasec.com.br
 DEPLOY_KNOWN_HOSTS       variable: trusted pinned VPS host-key line
 ```
 
+The repository variable `DEPLOY_ENABLED` is `false` only during initial VPS
+bootstrap or an intentional deployment freeze. Normal operation requires
+`DEPLOY_ENABLED=true`; changing it is a deployment-control decision.
+
 The shared deployment identity deliberately reduces credential management but
 increases blast radius. Server-side forced-command and sudo allowlists are the
 compensating controls and must explicitly map `deploy-tvdash` to exactly
@@ -144,4 +148,3 @@ Before declaring the integration complete, confirm:
 - the deployed image revision, deployment tag, and merge commit match;
 - the container is healthy, `/` returns 401 without credentials, and
   `/healthz` returns 200 through public HTTPS.
-

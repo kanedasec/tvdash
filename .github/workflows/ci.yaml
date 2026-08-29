@@ -45,7 +45,10 @@ jobs:
 
   deploy:
     name: Development deployment
-    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    if: >-
+      github.event_name != 'pull_request' &&
+      github.ref == 'refs/heads/main' &&
+      vars.DEPLOY_ENABLED == 'true'
     needs: containers
     runs-on: ubuntu-24.04
     timeout-minutes: 15

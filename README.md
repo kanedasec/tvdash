@@ -12,7 +12,7 @@ um merge protegido, a pipeline publica uma imagem imutável no GHCR com a tag
 executa a imagem; ele não compila o código-fonte.
 
 As instruções e os limites de confiança da automação estão em
-[`AGENT.md`](AGENT.md).
+[`AGENTS.md`](AGENTS.md).
 
 ## Estrutura
 

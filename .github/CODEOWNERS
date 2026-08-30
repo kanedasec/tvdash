@@ -1,0 +1,5 @@
+# Workflow callers and agent instructions define the application's CI/CD trust boundary.
+/.github/ @kanedasec
+/AGENT.md @kanedasec
+/AGENTS.md @kanedasec
+

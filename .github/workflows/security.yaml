@@ -1,0 +1,35 @@
+name: Security
+
+on:
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  actions: read
+  contents: read
+
+concurrency:
+  group: security-${{ github.workflow }}-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  differential-security:
+    name: Differential security
+    uses: kanedasec/platform-workflows/.github/workflows/security-differential.yaml@c797d138f8dc87d1ecec0fdfa730291d543fc4b6
+
+  policy-gate:
+    name: Security policy (SGP Manager)
+    needs: differential-security
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    environment:
+      name: security-policy
+    permissions:
+      actions: read
+      contents: read
+    steps:
+      - name: Apply centralized security policies
+        uses: kanedasec/platform-workflows/actions/sgp-policy-from-artifacts@c797d138f8dc87d1ecec0fdfa730291d543fc4b6
+        env:
+          SGP_MANAGER_API_KEY: ${{ secrets.SGP_MANAGER_API_KEY }}

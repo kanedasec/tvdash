@@ -21,7 +21,7 @@ data, and must return exactly `200` through Caddy for deployment readiness.
 ```text
 feature branch -> pull request
   |-> Standard CI (Python tests and workflow validation)
-  `-> differential Semgrep, Gitleaks, and Trivy -> SGP Manager gate
+  `-> full-repository Semgrep, Gitleaks, and Trivy -> SGP Manager gate
 protected merge -> main
   -> rebuild tests
   -> build and publish GHCR sha-<commit>
@@ -61,7 +61,7 @@ an arbitrary command, Compose path, service, image repository, or host path.
 This repository owns application source, tests, Dockerfile, and the two small
 workflow callers in `.github/workflows/`.
 
-`kanedasec/platform-workflows` owns reusable CI, differential scanners, GHCR
+`kanedasec/platform-workflows` owns reusable CI, full-repository scanners, GHCR
 publishing, SGP policy evaluation, and ephemeral Tailscale/SSH deployment.
 Every caller reference must use the same reviewed 40-character revision.
 
